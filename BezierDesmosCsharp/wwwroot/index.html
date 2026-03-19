@@ -1,0 +1,117 @@
+﻿<!DOCTYPE html>
+<html lang='en'>
+    <head>
+        <title>Desmos | Graphing Calculator</title>
+        <link rel='icon' href='https://www.desmos.com/assets/img/apps/graphing/favicon.ico'>
+        <script src="https://www.desmos.com/api/v1.8/calculator.js?apiKey=dcb31709b452b1cf9dc26972add0fda6"></script>
+    </head>
+<body>
+    <div id="calculator" style="width: 100vw; height: 100vh;"></div>
+
+    <script>
+        var elt = document.getElementById('calculator');
+        var calculator = Desmos.GraphingCalculator(elt);
+
+        var inner = elt.getElementsByClassName('dcg-graph-outer')[0]; //excluding unnecessary features
+        var latex;
+        var lastExpressionCount = 0;
+        calculator.setExpression({ id: 'top', latex: 'y=0 \\{0<x<480\\}', color: Desmos.Colors.Blue, secret: true });
+        calculator.setExpression({ id: 'bottom', latex: 'y=360 \\{0<x<480\\}', color: Desmos.Colors.Blue, secret: true });
+        calculator.setExpression({ id: 'left', latex: 'x=0 \\{0<y<360\\}', color: Desmos.Colors.Blue, secret: true });
+        calculator.setExpression({ id: 'right', latex: 'x=480 \\{0<y<360\\}', color: Desmos.Colors.Blue, secret: true });
+
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        calculator.setMathBounds({
+            left: -10,
+            right: 640,
+            bottom: -10,
+            top: 360
+        });
+
+        calculator.setExpression({ id: 'frame', latex: 'f=0' });
+        calculator.setExpression({ id: 'line', latex: 'l=0' });
+
+        hiddenGraph = calculator.getState();
+
+        async function changeGraph(data, frame) {
+            const start = performance.now();
+
+            calculator.setExpression({ id: 'frame', latex: 'f=' + frame });
+            calculator.setExpression({ id: 'line', latex: 'l=' + data.length });
+
+            data.forEach((latexStr, index) => {
+                calculator.setExpression({
+                    id: "expr_" + index,
+                    latex: latexStr,
+                    type: "expression",
+                    color: Desmos.Colors.BLUE
+                });
+            });
+
+            if (lastExpressionCount > data.length) {
+                for (let i = data.length; i < lastExpressionCount; i++) {
+                    calculator.removeExpression({ id: "expr_" + i });
+                }
+            }
+            lastExpressionCount = data.length;
+
+            const end = performance.now();
+            //console.log(`Render time: ${(end - start).toFixed(2)}ms`);
+        }
+
+        async function getLatexStrings(frame) {
+            try {
+                const response = await fetch(`api/plot/get-latex/${frame}`, {
+                    method: 'GET',
+                    headers: { 'Accept': 'application/json' }
+                });
+
+                if (!response.ok) throw new Error('An error occurred while fetching the LaTeX string: ' + response.statusText);
+
+                //console.log('Received LaTeX strings');
+                return await response.json();
+
+            } catch (error) {
+                console.error('Error fetching LaTeX string:', error);
+                alert('An error occurred while fetching the LaTeX string: ' + error.message);
+                return null;
+            }
+        }
+
+        async function renderFrame(frame) {
+            let totalFrames;
+            try {
+                const totalFramesResponse = await fetch('api/plot/get-total-frames', {
+                    method: 'GET',
+                    headers: { 'Accept': 'application/json' }
+                });
+                totalFrames = await totalFramesResponse.json();
+                console.log('Total frames:', totalFrames);
+            } catch (error) {
+                console.log('Error fetching total frames:', error);
+                return;
+            }
+
+            var frameData = await getLatexStrings(frame);
+
+            while (frame <= totalFrames && frameData) {
+                const startTime = performance.now();
+                await changeGraph(frameData, frame);
+                const endTime = performance.now();
+                const diff = endTime - startTime;
+
+                await sleep(diff <= 500 ? 500 - diff : 0);
+
+                frame++;
+                frameData = await getLatexStrings(frame);
+            }
+        }
+
+        renderFrame(1);
+    </script>
+</body>
+</html>
