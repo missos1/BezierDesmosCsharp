@@ -7,30 +7,9 @@ namespace BezierCsharp.Core
     {
         public static void ProcessImage()
         {
-            string appDirectory;
-            string inputDir;
-            #if DEBUG
-            appDirectory = Directory.GetCurrentDirectory();
-            Console.WriteLine($"Running in DEBUG mode. Current directory: {appDirectory}");
-
-            #else
-            appDirectory = AppDomain.CurrentDomain.BaseDirectory;
-
-            #endif
-
-            inputDir = Path.Combine(appDirectory, "Images", "Input");
-            //_outputDir = Path.Combine(appDirectory, "Images", "Output");
-
-            if (!Directory.Exists(inputDir))
-            {
-                Console.WriteLine("Input directory not found. Creating directories...");
-                Directory.CreateDirectory(inputDir);
-                //Directory.CreateDirectory(_outputDir);
-            }
-
             var options = new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount };
 
-            Parallel.ForEach(Directory.GetFiles(inputDir), (options), (inputImage) =>
+            Parallel.ForEach(Directory.GetFiles(ConsoleVariable.inputDir), (options), (inputImage) =>
             {   
                 try
                 {
@@ -39,12 +18,12 @@ namespace BezierCsharp.Core
 
                     if (ConsoleVariable.UseCanny)
                     {
-                        Console.WriteLine($"Processing image: {inputImage} with Canny edge detection.");
+                        // Console.WriteLine($"Processing image: {inputImage} with Canny edge detection.");
                         edges = CannyConverter.Convert(image, ConsoleVariable.UseGaussBlurr, ConsoleVariable.UseBilateralFilter);
                     }
                     else
                     {
-                        using Mat gray = new Mat();
+                        using Mat gray = new();
                         Cv2.CvtColor(image, gray, ColorConversionCodes.BGR2GRAY);
                         Cv2.Threshold(gray, edges, 127, 255, ThresholdTypes.Binary);
                     }
@@ -64,9 +43,6 @@ namespace BezierCsharp.Core
                 }
             });
             Console.WriteLine($"Successfully parsed {LatexCache.GetFrameCount()} frames.");
-            
         }
-
-        
     }
 }

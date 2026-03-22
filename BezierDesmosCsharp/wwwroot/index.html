@@ -27,7 +27,7 @@
 
         calculator.setMathBounds({
             left: -10,
-            right: 640,
+            right: 480,
             bottom: -10,
             top: 360
         });
@@ -82,6 +82,15 @@
             }
         }
 
+        const params = {
+            mode: 'contain',
+            mathBounds: { left: -10, bottom: 0, right: 480, top: 360 },
+            width: 1280,
+            height: 720,
+            targetPixelRatio: 1,
+            format: 'png'        // Or 'svg' if you prefer
+        };
+
         async function renderFrame(frame) {
             let totalFrames;
             try {
@@ -104,14 +113,51 @@
                 const endTime = performance.now();
                 const diff = endTime - startTime;
 
-                await sleep(diff <= 500 ? 500 - diff : 0);
+                function finishRender() {
+                    return new Promise(resolve => {
+                        calculator.asyncScreenshot(params, async (screenshot) => {
+                            //console.log(`Screenshot taken for frame ${frame}`);
+                            await handleScreenshot(screenshot, frame);
+                            resolve();
+                        })
+                    });
+                }
+
+                await finishRender();
 
                 frame++;
+                if (frame > totalFrames) {
+                    console.log('All frames rendered and saved!');
+                    break;
+                }
                 frameData = await getLatexStrings(frame);
             }
         }
 
-        renderFrame(1);
+        async function handleScreenshot(screenshot, frame) {
+            try {
+                const response = await fetch('api/plot/save-frame', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ frame: frame, data: screenshot })
+                });
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error(`Server failed to save frame ${frame}:`, response.status, errorText);
+                } else {
+                    //console.log(`Frame ${frame} saved successfully!`);
+                }
+            } catch (err) {
+                console.error('Error sending screenshot to server:', err);
+            }
+        }
+
+        async function render() {
+            await renderFrame(1);
+            calculator.setExpression({ id: "done", latex: "Done Rendering!!" });
+        }
+
+        render();
     </script>
 </body>
 </html>

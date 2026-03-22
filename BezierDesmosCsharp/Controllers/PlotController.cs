@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using BezierCsharp.Core;
 
-
 namespace BezierCsharp.Controllers
 {
     [ApiController]
@@ -42,6 +41,21 @@ namespace BezierCsharp.Controllers
                 return StatusCode(500, ex.Message);
             }
 
+        }
+
+        [HttpPost("save-frame")]
+        public IActionResult SaveFrame([FromBody] FrameData model)
+        {
+            var base64Data = model.Data.Split(',')[1];
+            var bytes = Convert.FromBase64String(base64Data);
+            System.IO.File.WriteAllBytes(ConsoleVariable.outputDir + $"/frame{model.Frame:D4}.png", bytes);
+            return Ok();
+        }
+
+        public class FrameData
+        {
+            public int Frame { get; set; }
+            public string Data { get; set; } = "";
         }
     }
 }

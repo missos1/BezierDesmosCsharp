@@ -23,24 +23,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-Console.WriteLine("Welcome to BezierDesmosCsharp!");
-bool isProcessed = false;
-
-while (!isProcessed)
-{
-    Console.WriteLine("To process images, enter 1:");
-    string? input = Console.ReadLine();
-
-    if (input == "1")
-    {
-        ImagesProcesor.ProcessImage();
-        isProcessed = true;
-        Console.WriteLine("Image processing completed. Starting desmos...");
-    }
-    else
-    {
-        Console.WriteLine("Invalid input. Please enter 1 to process images.");
-    }
-}
+ConsoleVariable.UpdateFromCommand();
 
 app.Run();

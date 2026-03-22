@@ -6,14 +6,14 @@ namespace BezierCsharp.Core
     {
         public static Mat Convert(Mat src, bool useGaussBlurr, bool useBilateralFilter)
         {
-            Mat edges = new Mat();
+            Mat edges = new();
 
-            using (Mat grayscale = new Mat())
+            using (Mat grayscale = new())
             {
                 Cv2.CvtColor(src, grayscale, ColorConversionCodes.BGR2GRAY);
                 if (useBilateralFilter)
                 {
-                    using (Mat temp = new Mat())
+                    using (Mat temp = new())
                     {
 
                         Cv2.BilateralFilter(grayscale, temp, 5, 50, 50);
