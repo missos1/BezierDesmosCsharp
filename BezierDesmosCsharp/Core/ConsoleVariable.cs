@@ -19,6 +19,7 @@
 
         #else
             appDirectory = AppDomain.CurrentDomain.BaseDirectory;
+            Console.WriteLine($"Running in RELEASE mode. Base directory: {appDirectory}");
 
         #endif
 
@@ -30,6 +31,7 @@
                 Console.WriteLine("Input & Output directory not found. Creating directories...");
                 Directory.CreateDirectory(inputDir);
                 Directory.CreateDirectory(outputDir);
+                return;
             }
             Console.WriteLine($"==================================================================================================\n");
             Console.WriteLine("Welcome to BezierDesmosCsharp!".ToUpper());

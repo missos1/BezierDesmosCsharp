@@ -5,6 +5,8 @@ namespace BezierCsharp.Core
 {
     public static class ImagesProcesor
     {
+        public static int ImageHeight = 0;
+        public static int ImageWidth = 0;
         public static void ProcessImage()
         {
             var options = new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount };
@@ -14,6 +16,8 @@ namespace BezierCsharp.Core
                 try
                 {
                     using Mat image = Cv2.ImRead(inputImage);
+                    ImageHeight = image.Height;
+                    ImageWidth = image.Width;   
                     Mat edges = image;
 
                     if (ConsoleVariable.UseCanny)

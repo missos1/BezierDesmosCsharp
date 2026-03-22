@@ -43,6 +43,23 @@ namespace BezierCsharp.Controllers
 
         }
 
+        [HttpGet("get-frame-size")]
+        public IActionResult GetFrameSize()
+        {
+            try
+            {
+                return Ok(new
+                {
+                    Width = ImagesProcesor.ImageWidth,  
+                    Height = ImagesProcesor.ImageHeight
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
         [HttpPost("save-frame")]
         public IActionResult SaveFrame([FromBody] FrameData model)
         {
