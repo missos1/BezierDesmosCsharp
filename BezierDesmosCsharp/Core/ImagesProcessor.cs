@@ -14,23 +14,23 @@ namespace BezierCsharp.Core
 
         public void ProcessImage()
         {
-            var options = new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount };
+            var options = new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount }; // 
 
             Parallel.ForEach(Directory.GetFiles(_appState.InputDir), (options), (inputImage) =>
             {   
                 try
                 {
                     using Mat image = Cv2.ImRead(inputImage);
-                    _appState.ImageHeight = image.Height;
-                    _appState.ImageWidth = image.Width;   
+                    _appState.ImageHeight = image.Height;                                                             // this is not thread safe, but we assume all images have the same dimensions, so it should be fine
+                    _appState.ImageWidth = image.Width;                                                               // unless some funky image is in the input directory which what are you doing
                     Mat edges = image;
 
-                    if (_appState.UseCanny)
-                    {
+                    if (_appState.UseCanny)                                                                           // if Canny is enabled, we need to convert the image to edges,
+                    {                                                                                                 // otherwise we can just use the original image for tracing
                         // Console.WriteLine($"Processing image: {inputImage} with Canny edge detection.");
-                        edges = CannyConverter.Convert(image, _appState.UseGaussBlurr, _appState.UseBilateralFilter);
+                        edges = CannyConverter.Convert(image, _appState.UseBilateralFilter, _appState.UseL2Gradient); // this makes it works better for color images
                     }
-                    else
+                    else                                                                                              // if Canny is not enabled, we need to convert the image to grayscale                                                                                                  // and then threshold it to get a binary image for tracing 
                     {
                         using Mat gray = new();
                         Cv2.CvtColor(image, gray, ColorConversionCodes.BGR2GRAY);

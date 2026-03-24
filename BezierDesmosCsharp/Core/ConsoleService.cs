@@ -24,7 +24,7 @@
             bool isProcessed = false;
             while (!isProcessed)
             {
-                Console.WriteLine("To see list of commands, enter 'help'. To process images, enter 1: ");
+                Console.WriteLine("To see list of commands, enter 'help'. To process images, enter 'start': ");
                 Console.Write("> ");
                 string input = Console.ReadLine()?.Trim().ToLower() ?? string.Empty;
                 string[] parts = input.Split(' ', StringSplitOptions.RemoveEmptyEntries);
@@ -32,7 +32,7 @@
                 if (parts.Length == 1)
                 {
                     ActionCommand(input);
-                    if (parts[0] == "1")
+                    if (parts[0] == "start")
                     {
                         isProcessed = true;
                     }
@@ -52,21 +52,24 @@
         {
             switch (command)
             {
-                case "1":
+                case "start":
                     _imagesProcessor.ProcessImage();
                     Console.WriteLine("Image processing completed. Starting desmos...");
                     break;
                 case "help":
                     Console.WriteLine("Available commands:");
                     Console.Write('\n');
-                    Console.WriteLine("1 - Process images and start desmos");
+                    Console.WriteLine("Start - Process images and start desmos");
                     Console.WriteLine("help - Show this help message");
                     Console.Write('\n');
                     Console.WriteLine("You can also set the following variables before processing images:");
                     Console.Write('\n');
-                    Console.WriteLine("blur - Set to true to apply Gaussian blur (default: false)");
-                    Console.WriteLine("bilateral - Set to true to apply bilateral filter (default: true)");
+                    Console.WriteLine("inputdir - Set the input directory for images (default: ./Images/Input)");
+                    Console.WriteLine("outputdir - Set the output directory for processed images (default: ./Images/Output)");
+                    Console.WriteLine("(Note that the input and output directories must exist before setting them. The app will not create them for you, except for the default ones)");
                     Console.WriteLine("canny - Set to true to apply Canny edge detection (default: false)");
+                    Console.WriteLine("bilateral - Set to true to apply bilateral filter in Canny edge detection (default: true)");
+                    Console.WriteLine("L2grad - Set to true to use L2 gradient in Canny edge detection (default: true)");
                     Console.Write('\n');
                     break;
             }
@@ -76,16 +79,15 @@
         {
             switch (command)
             {
-                case "blur":
-                    if (bool.TryParse(value, out bool blurValue))
+                case "L2grad":
+                    if (bool.TryParse(value, out bool l2Value))
                     {
-                        _appState.UseGaussBlurr = blurValue;
-                        Console.WriteLine($"Gaussian blur set to {_appState.UseGaussBlurr}");
-                        
+                        _appState.UseL2Gradient = l2Value;
+                        Console.WriteLine($"L2 gradient set to {_appState.UseL2Gradient}");
                     }
                     else
                     {
-                        Console.WriteLine("Invalid value for blur. Please enter true or false.");
+                        Console.WriteLine("Invalid value for L2grad. Please enter true or false.");
                     }
                     break;
                 case "bilateral":

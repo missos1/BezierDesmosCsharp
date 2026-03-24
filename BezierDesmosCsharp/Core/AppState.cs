@@ -2,9 +2,10 @@
 {
     public class AppState
     {
-        public bool UseGaussBlurr { get; set; } = false;
         public bool UseBilateralFilter { get; set; } = true;
+        public bool UseL2Gradient { get; set; } = true;
         public bool UseCanny { get; set; } = false;
+
 
         public string InputDir { get; set; } = string.Empty;
         public string OutputDir { get; set; } = string.Empty;

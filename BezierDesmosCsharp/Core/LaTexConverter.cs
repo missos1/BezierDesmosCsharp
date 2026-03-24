@@ -18,7 +18,7 @@ namespace BezierCsharp.Core
                 for (int segment = 0; segment < curve.N; segment++)                     // Iterate through each segment of the curve
                 {
                     int tag = curve.Tag[segment];                                       // Get the tag for the current segment (corner or curve)
-                    PotraceDPoint[] segmentPoints = curve.C[segment];                   // 
+                    PotraceDPoint[] segmentPoints = curve.C[segment];                    
                     double x0 = start.X; 
                     double y0 = -start.Y + height;                                      // Invert the y-coordinate and adjust for height to match the coordinate system used in Desmos (do the same for all y's)
 
@@ -27,8 +27,8 @@ namespace BezierCsharp.Core
                         double x1 = segmentPoints[1].X, y1 = -segmentPoints[1].Y + height;
                         double x2 = segmentPoints[2].X, y2 = -segmentPoints[2].Y + height;
                                                                                         // No control points for corner segments
-                        latex.Add($"((1-t){x0:0.####} + {x1:0.####}t, (1-t){y0:0.####} + {y1:0.####}t)");
-                        latex.Add($"((1-t){x1:0.####} + {x2:0.####}t, (1-t){y1:0.####} + {y2:0.####}t)");
+                        latex.Add($"((1-t){x0:0.#####} + {x1:0.#####}t, (1-t){y0:0.#####} + {y1:0.#####}t)");
+                        latex.Add($"((1-t){x1:0.######} + {x2:0.#####}t, (1-t){y1:0.#####} + {y2:0.#####}t)");
                     }
                     else if (tag == PotraceCurve.PotraceCurveTo)                        // Latex for non corner segments (Bezier curves)
                     {
@@ -36,10 +36,9 @@ namespace BezierCsharp.Core
                         double x2 = segmentPoints[1].X, y2 = -segmentPoints[1].Y + height;
                         double x3 = segmentPoints[2].X, y3 = -segmentPoints[2].Y + height;
 
-                        latex.Add($"((1-t)^3 {x0:0.####} + 3(1-t)^2 {x1:0.####}t + 3(1-t) {x2:0.####}t^2 + {x3:0.####}t^3, " +
-                                  $"(1-t)^3 {y0:0.####} + 3(1-t)^2 {y1:0.####}t + 3(1-t) {y2:0.####}t^2 + {y3:0.####}t^3)");
+                        latex.Add($"((1-t)^3 {x0:0.#####} + 3(1-t)^2 {x1:0.#####}t + 3(1-t) {x2:0.#####}t^2 + {x3:0.#####}t^3, " +
+                                  $"(1-t)^3 {y0:0.#####} + 3(1-t)^2 {y1:0.#####}t + 3(1-t) {y2:0.#####}t^2 + {y3:0.#####}t^3)");
                     }
-
                     start = segmentPoints[2];                                           // Update the start point for the next segment
                 }
                 currentPath = currentPath.Next;                                         // Move to the next path in the list
