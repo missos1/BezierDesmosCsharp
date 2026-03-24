@@ -3,27 +3,32 @@ using OpenCvSharp;
 
 namespace BezierCsharp.Core
 {
-    public static class ImagesProcesor
+    public class ImagesProcessor
     {
-        public static int ImageHeight = 0;
-        public static int ImageWidth = 0;
-        public static void ProcessImage()
+        private readonly AppState _appState;
+
+        public ImagesProcessor(AppState appState)
+        {
+            _appState = appState;
+        }
+
+        public void ProcessImage()
         {
             var options = new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount };
 
-            Parallel.ForEach(Directory.GetFiles(ConsoleVariable.inputDir), (options), (inputImage) =>
+            Parallel.ForEach(Directory.GetFiles(_appState.InputDir), (options), (inputImage) =>
             {   
                 try
                 {
                     using Mat image = Cv2.ImRead(inputImage);
-                    ImageHeight = image.Height;
-                    ImageWidth = image.Width;   
+                    _appState.ImageHeight = image.Height;
+                    _appState.ImageWidth = image.Width;   
                     Mat edges = image;
 
-                    if (ConsoleVariable.UseCanny)
+                    if (_appState.UseCanny)
                     {
                         // Console.WriteLine($"Processing image: {inputImage} with Canny edge detection.");
-                        edges = CannyConverter.Convert(image, ConsoleVariable.UseGaussBlurr, ConsoleVariable.UseBilateralFilter);
+                        edges = CannyConverter.Convert(image, _appState.UseGaussBlurr, _appState.UseBilateralFilter);
                     }
                     else
                     {

@@ -7,9 +7,10 @@ namespace BezierCsharp.Controllers
     [Route("api/[controller]")]
     public class PlotController : ControllerBase
     {
-        public PlotController()
+        private readonly AppState _appState;
+        public PlotController(AppState appState)
         {
-
+            _appState = appState;
         }
 
         [HttpGet("get-latex/{id}")]
@@ -50,8 +51,8 @@ namespace BezierCsharp.Controllers
             {
                 return Ok(new
                 {
-                    Width = ImagesProcesor.ImageWidth,  
-                    Height = ImagesProcesor.ImageHeight
+                    Width = _appState.ImageWidth,  
+                    Height = _appState.ImageHeight
                 });
             }
             catch (Exception ex)
@@ -65,7 +66,7 @@ namespace BezierCsharp.Controllers
         {
             var base64Data = model.Data.Split(',')[1];
             var bytes = Convert.FromBase64String(base64Data);
-            System.IO.File.WriteAllBytes(ConsoleVariable.outputDir + $"/frame{model.Frame:D4}.png", bytes);
+            System.IO.File.WriteAllBytes(_appState.OutputDir + $"/frame{model.Frame:D4}.png", bytes);
             return Ok();
         }
 

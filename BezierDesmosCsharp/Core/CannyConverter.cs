@@ -15,7 +15,6 @@ namespace BezierCsharp.Core
                 {
                     using (Mat temp = new())
                     {
-
                         Cv2.BilateralFilter(grayscale, temp, 5, 50, 50);
                         temp.CopyTo(grayscale);
                     }

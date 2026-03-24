@@ -1,38 +1,20 @@
 ﻿namespace BezierCsharp.Core
 {
-    public static class ConsoleVariable
+    public class ConsoleService
     {
-        public static bool UseGaussBlurr = false;
-        public static bool UseBilateralFilter = true;
-        public static bool UseCanny = false;
+        private readonly AppState _appState;
+        private readonly ImagesProcessor _imagesProcessor;
 
-        private static string appDirectory = "";
-        public static string inputDir = "";
-        public static string outputDir = "";
-        
-
-        public static void UpdateFromCommand()
+        public ConsoleService(AppState appState, ImagesProcessor imagesProcessor)
         {
-        #if DEBUG
-            appDirectory = Directory.GetCurrentDirectory();
-            Console.WriteLine($"Running in DEBUG mode. Current directory: {appDirectory}");
+            _appState = appState;
+            _imagesProcessor = imagesProcessor;
+        }
 
-        #else
-            appDirectory = AppDomain.CurrentDomain.BaseDirectory;
-            Console.WriteLine($"Running in RELEASE mode. Base directory: {appDirectory}");
+        public void UpdateFromCommand()
+        {
+            _appState.InitializeDirectories();
 
-        #endif
-
-            inputDir = Path.Combine(appDirectory, "Images", "Input");
-            outputDir = Path.Combine(appDirectory, "Images", "Output");
-
-            if (!Directory.Exists(inputDir) || !Directory.Exists(outputDir))
-            {
-                Console.WriteLine("Input & Output directory not found. Creating directories...");
-                Directory.CreateDirectory(inputDir);
-                Directory.CreateDirectory(outputDir);
-                return;
-            }
             Console.WriteLine($"==================================================================================================\n");
             Console.WriteLine("Welcome to BezierDesmosCsharp!".ToUpper());
             Console.WriteLine("Please make sure to put frame with format frame<index>.png (i.e frame0001.png) for the app to work!");
@@ -64,16 +46,14 @@
                     Console.WriteLine("Invalid input. Please enter a command or set a variable.");
                 }
             }
-
-
         }
 
-        private static void ActionCommand(string command)
+        private void ActionCommand(string command)
         {
             switch (command)
             {
                 case "1":
-                    ImagesProcesor.ProcessImage();
+                    _imagesProcessor.ProcessImage();
                     Console.WriteLine("Image processing completed. Starting desmos...");
                     break;
                 case "help":
@@ -92,15 +72,15 @@
             }
         }
 
-        private static void SettingCommand(string command, string value)
+        private void SettingCommand(string command, string value)
         {
             switch (command)
             {
                 case "blur":
                     if (bool.TryParse(value, out bool blurValue))
                     {
-                        UseGaussBlurr = blurValue;
-                        Console.WriteLine($"Gaussian blur set to {UseGaussBlurr}");
+                        _appState.UseGaussBlurr = blurValue;
+                        Console.WriteLine($"Gaussian blur set to {_appState.UseGaussBlurr}");
                         
                     }
                     else
@@ -111,8 +91,8 @@
                 case "bilateral":
                     if (bool.TryParse(value, out bool bilateralValue))
                     {
-                        UseBilateralFilter = bilateralValue;
-                        Console.WriteLine($"Bilateral filter set to {UseBilateralFilter}");
+                        _appState.UseBilateralFilter = bilateralValue;
+                        Console.WriteLine($"Bilateral filter set to {_appState.UseBilateralFilter}");
                     }
                     else
                     {
@@ -122,12 +102,34 @@
                 case "canny":
                     if (bool.TryParse(value, out bool cannyValue))
                     {
-                        UseCanny = cannyValue;
-                        Console.WriteLine($"Canny edge detection set to {UseCanny}. Note that will take significantly longer to render due to Desmos bottlenecking.");
+                        _appState.UseCanny = cannyValue;
+                        Console.WriteLine($"Canny edge detection set to {_appState.UseCanny}. Note that will take significantly longer to render due to Desmos bottlenecking.");
                     }
                     else
                     {
                         Console.WriteLine("Invalid value for canny. Please enter true or false.");
+                    }
+                    break;
+                case "inputdir":
+                    if (Directory.Exists(value))
+                    {
+                        _appState.InputDir = value;
+                        Console.WriteLine($"Input directory set to {_appState.InputDir}");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Invalid directory path. Please enter a valid path.");
+                    }
+                    break;
+                case "outputdir":
+                    if (Directory.Exists(value))
+                    {
+                        _appState.OutputDir = value;
+                        Console.WriteLine($"Output directory set to {_appState.OutputDir}");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Invalid directory path. Please enter a valid path.");
                     }
                     break;
             }
