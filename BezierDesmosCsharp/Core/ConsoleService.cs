@@ -69,7 +69,7 @@
                     Console.WriteLine("(Note that the input and output directories must exist before setting them. The app will not create them for you, except for the default ones)");
                     Console.WriteLine("canny - Set to true to apply Canny edge detection (default: false)");
                     Console.WriteLine("bilateral - Set to true to apply bilateral filter in Canny edge detection (default: true)");
-                    Console.WriteLine("L2grad - Set to true to use L2 gradient in Canny edge detection (default: true)");
+                    Console.WriteLine("l2grad - Set to true to use L2 gradient in Canny edge detection (default: true)");
                     Console.Write('\n');
                     break;
             }
@@ -79,7 +79,7 @@
         {
             switch (command)
             {
-                case "L2grad":
+                case "l2grad":
                     if (bool.TryParse(value, out bool l2Value))
                     {
                         _appState.UseL2Gradient = l2Value;
