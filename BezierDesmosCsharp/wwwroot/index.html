@@ -9,17 +9,18 @@
     <div id="calculator" style="width: 100vw; height: 100vh;"></div>
 
     <script>
-        var elt = document.getElementById('calculator');
-        var calculator = Desmos.GraphingCalculator(elt);
+        let elt = document.getElementById('calculator');
+        let calculator = Desmos.GraphingCalculator(elt);
 
-        var inner = elt.getElementsByClassName('dcg-graph-outer')[0]; //excluding unnecessary features
-        var latex;
-        var lastExpressionCount = 0;
+        let inner = elt.getElementsByClassName('dcg-graph-outer')[0]; //excluding unnecessary features
+        let lastExpressionCount = 0;
         let params;
+        let takeScreenshot;
+        let totalFrames;
 
         async function init() {
             try {
-                const response = await fetch('api/plot/get-frame-size', {
+                const response = await fetch('api/plot/init-data', {
                     method: 'GET',
                     headers: { 'Accept': 'application/json' }
                 });
@@ -27,8 +28,11 @@
                 if (!response.ok) throw new Error('Failed to fetch frame size');
 
                 const frameSize = await response.json();
+
                 const width = frameSize.width;
                 const height = frameSize.height;
+                totalFrames = frameSize.totalFrames;
+                takeScreenshot = frameSize.takeScreenshot;
 
                 calculator.setExpression({ id: 'top', latex: `y=0 \\{0<x<${width}\\}`, color: Desmos.Colors.Blue, secret: true });
                 calculator.setExpression({ id: 'bottom', latex: `y=${height} \\{0<x<${width}\\}`, color: Desmos.Colors.Blue, secret: true });
@@ -106,19 +110,6 @@
         }
 
         async function renderFrame(frame) {
-            let totalFrames;
-            try {
-                const totalFramesResponse = await fetch('api/plot/get-total-frames', {
-                    method: 'GET',
-                    headers: { 'Accept': 'application/json' }
-                });
-                totalFrames = await totalFramesResponse.json();
-                console.log('Total frames:', totalFrames);
-            } catch (error) {
-                console.log('Error fetching total frames:', error);
-                return;
-            }
-
             var frameData = await getLatexStrings(frame);
 
             while (frame <= totalFrames && frameData) {
@@ -137,7 +128,11 @@
                     });
                 }
 
-                await finishRender();
+                if (takeScreenshot) {
+                    await finishRender();
+                } else {
+                    await sleep(5)
+                }
 
                 frame++;
                 if (frame > totalFrames) {

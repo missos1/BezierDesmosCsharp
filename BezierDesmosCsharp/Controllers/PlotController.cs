@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using BezierCsharp.Core;
+using Microsoft.AspNetCore.Mvc.TagHelpers.Cache;
 
 namespace BezierCsharp.Controllers
 {
@@ -30,29 +31,17 @@ namespace BezierCsharp.Controllers
             }
         }
 
-        [HttpGet("get-total-frames")]
-        public IActionResult GetFrameCount()
-        {
-            try
-            {
-                return Ok(LatexCache.GetFrameCount());
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
-
-        }
-
-        [HttpGet("get-frame-size")]
-        public IActionResult GetFrameSize()
+        [HttpGet("init-data")]
+        public IActionResult GetInitData()
         {
             try
             {
                 return Ok(new
                 {
+                    TotalFrames = LatexCache.GetFrameCount(),
                     Width = _appState.ImageWidth,  
-                    Height = _appState.ImageHeight
+                    Height = _appState.ImageHeight,
+                    TakeScreenshot = _appState.TakeScreenshot
                 });
             }
             catch (Exception ex)

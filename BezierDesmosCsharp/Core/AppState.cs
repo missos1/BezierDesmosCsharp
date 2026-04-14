@@ -12,6 +12,7 @@
 
         public int ImageWidth { get; set; }
         public int ImageHeight { get; set; }
+        public bool TakeScreenshot { get; set; } = true;
 
         public AppState()
         {

@@ -66,6 +66,7 @@
                     Console.Write('\n');
                     Console.WriteLine("inputdir - Set the input directory for images (default: ./Images/Input)");
                     Console.WriteLine("outputdir - Set the output directory for processed images (default: ./Images/Output)");
+                    Console.WriteLine("takescreenshot - Set to true to take a screenshot of the Desmos graph after rendering (default: true)");
                     Console.WriteLine("(Note that the input and output directories must exist before setting them. The app will not create them for you, except for the default ones)");
                     Console.WriteLine("canny - Set to true to apply Canny edge detection (default: false)");
                     Console.WriteLine("bilateral - Set to true to apply bilateral filter in Canny edge detection (default: true)");
@@ -79,6 +80,17 @@
         {
             switch (command)
             {
+                case "takescreenshot":
+                    if (bool.TryParse(value, out bool screenshotValue))
+                    {
+                        _appState.TakeScreenshot = screenshotValue;
+                        Console.WriteLine($"Take screenshot set to {_appState.TakeScreenshot}");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Invalid value for takescreenshot. Please enter true or false.");
+                    }
+                    break;
                 case "l2grad":
                     if (bool.TryParse(value, out bool l2Value))
                     {

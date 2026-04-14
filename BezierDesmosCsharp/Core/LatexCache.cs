@@ -26,11 +26,10 @@ namespace BezierCsharp.Core
 
         public static int GetFrameCount()
         {
-            foreach (var key in _latexStringsDict.Keys)
-            {
-                Console.WriteLine($"Frame ID: {key}");
-            }
-
+            //foreach (var key in _latexStringsDict.Keys)
+            //{
+            //    Console.WriteLine($"Frame ID: {key}");
+            //}
 
             return _latexStringsDict.Count;
         }
