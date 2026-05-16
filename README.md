@@ -19,7 +19,7 @@ Inspired by junferno's [DesmosBezierRenderer](https://github.com/kevinjycui/Desm
 Download the latest release directly from the [Releases](../../releases) page, extract and run the `.exe`.
 
 ### Option 2: Build from source
-Make sure you have the .NET SDK installed and your OpenCV wrappers set up.
+Make sure you have the .NET SDK installed and your OpenCV, BitmapToVector wrappers set up.
 
 ```bash
 # Clone it
