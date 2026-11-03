@@ -11,6 +11,7 @@
   <ItemGroup>
     <PackageReference Include="BitmapToVector" Version="1.16.3" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.5" />
+    <PackageReference Include="Microsoft.OpenApi" Version="2.7.5" />
     <PackageReference Include="OpenCvsharp4" Version="4.13.0.20260318" />
     <PackageReference Include="OpenCvSharp4.runtime.win" Version="4.13.0.20260302" />
   </ItemGroup>
